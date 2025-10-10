@@ -25,6 +25,7 @@ fi
 dnf module disable nodejs -y &>>$LOG_FILE
 dnf module enable nodejs:20 -y &>>$LOG_FILE
 dnf install nodejs -y &>>$LOG_FILE
+echo -e "Installing Nodejs:20 $G SUCCESS $N"
 id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]; then
     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
@@ -41,7 +42,8 @@ cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_F
 systemctl daemon-reload
 systemctl enable catalogue &>>$LOG_FILE
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
-dnf install mongodb-mongosh1 -y &>>$LOG_FILE
+dnf install mongodb-mongosh -y &>>$LOG_FILE
+echo -e "Installing mongodb clinet $G SUCCESS $N"
 INDEX=$(mongosh mongodb.sgrdevsecops.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
 if [ $INDEX -le 0 ]; then
     mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
