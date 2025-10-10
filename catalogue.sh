@@ -84,6 +84,7 @@ if [ $INDEX < le 0 ]; then
     VALIDATE $? "Load catalogue prodcuts"
 else    
     echo -e "Catalogue products already loaded $Y SKIPPING $N"
+fi
 
 systemctl restart catalogue &>>$LOG_FILE
 VALIDATE $? "Restarted catalogue"
