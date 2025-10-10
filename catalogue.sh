@@ -9,6 +9,7 @@ USERID=$(id -u)
 
 MONGODB_HOST=mongodb.sgrdevsecops.fun
 LOGS_FOLDER="/var/log/shell-roboshop"
+SCRIPT_DIR=$PWD
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 
@@ -33,7 +34,7 @@ dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? "Disabling NodeJS"
 
 dnf module enable nodejs:20 -y &>>$LOG_FILE
-VALIDATE $? "DisablingEnabling NodeJS:20"
+VALIDATE $? "Enabling NodeJS:20"
 
 dnf install nodejs -y &>>$LOG_FILE
 VALIDATE $? "Installing NodeJS"
@@ -56,7 +57,7 @@ VALIDATE $? "unzip catalogue"
 npm install &>>$LOG_FILE
 VALIDATE $? "Install dependenceis"
 
-cp catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
+cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
 VALIDATE $? "copy systemctl serice"
 
 systemctl daemon-reload
