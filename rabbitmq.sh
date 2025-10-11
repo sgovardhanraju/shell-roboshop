@@ -28,7 +28,7 @@ VALIDATE () { # functions receive inputs through args just like shell script arg
         echo -e " $2..... $G is SUCCESS $N" | tee -a $LOG_FILE
     fi
 }
-cp $SCRIPT_DIR/etc/yum.repos.d/rabbitmq.repo 
+cp $SCRIPT_DIR/rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo &>>$LOG_FILE
 
 dnf install rabbitmq-server -y &>>$LOG_FILE
 VALIDATE $? "Installing RabbiMQ server"
