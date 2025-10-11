@@ -7,11 +7,10 @@ N="\e[0m"
 
 USERID=$(id -u)
 
-MONGODB_HOST=mongodb.sgrdevsecops.fun
 LOGS_FOLDER="/var/log/shell-roboshop"
-SCRIPT_DIR=$PWD
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
+SCRIPT_DIR=$PWD
 
 mkdir -p $LOGS_FOLDER
 echo "Script starting excuted at $(date)" | tee -a $LOG_FILE
@@ -30,13 +29,11 @@ VALIDATE () { # functions receive inputs through args just like shell script arg
 }
 
 dnf module disable nodejs -y &>>$LOG_FILE
-VALIDATE $? "Disabling NodeJS"
-
+VALIDATE $? "Disabling nodejs"
 dnf module enable nodejs:20 -y &>>$LOG_FILE
-VALIDATE $? "Enabling NodeJS:20"
-
+VALIDATE $? "Enabling nodejs:20"
 dnf install nodejs -y &>>$LOG_FILE
-VALIDATE $? "Installing NodeJS"
+VALIDATE $? "Installing NodeJs"
 
 id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]; then
@@ -49,46 +46,33 @@ fi
 mkdir -p /app &>>$LOG_FILE
 VALIDATE $? "Creating app directory"
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOG_FILE
-VALIDATE $? "Downloading catalogure application"
+curl -L -o /tmp/user.zip https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip &>>$LOG_FILE
+VALIDATE $? "Downloading user application"
 
-cd /app
+cd /app &>>$LOG_FILE
 VALIDATE $? "Changing to app directory"
 
 rm -rf /app/*
 VALIDATE $? "Removing existing code"
 
-unzip /tmp/catalogue.zip &>>$LOG_FILE
+unzip /tmp/user.zip &>>$LOG_FILE
 VALIDATE $? "unzip catalogue"
 
-npm install &>>$LOG_FILE
-VALIDATE $? "Install dependenceis"
+cd /app 
+npm install 
+&>>$LOG_FILE
+VALIDATE $? "installing dependenceis"
 
-cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
-VALIDATE $? "copy systemctl serice"
+cp mongouser.repo $SCRIPT_DIR/etc/systemd/system/user.service &>>$LOG_FILE
+VALIDATE $? "Adding cart repo" 
 
 systemctl daemon-reload
-systemctl enable catalogue &>>$LOG_FILE
-VALIDATE $? "Enable catalogue"
+systemctl enable user &>>$LOG_FILE
+VALIDATE $? "Enable user"
 
-cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
-VALIDATE $? "Copy mongo repo"
-
-dnf install mongodb-mongosh -y &>>$LOG_FILE
-VALIDATE $? "Install MongoDB Client"
-
-INDEX=$(mongosh mongodb.sgrdevsecops.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
-if [ $INDEX -le 0 ]; then
-    mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
-    VALIDATE $? "Load catalogue prodcuts"
-else    
-    echo -e "Catalogue products already loaded $Y SKIPPING $N"
-fi
-
-systemctl restart catalogue &>>$LOG_FILE
-VALIDATE $? "Restarted catalogue"
+systemctl start user &>>$LOG_FILE
+VALIDATE $? "Starting user"
 
 END_TIME=$(date +%s)
 TOTAL_TIME=$(($END_TIME - $START_TIME))
 echo -e "Sctipt executed in: $Y $TOTAL_TIME Seconds"
-

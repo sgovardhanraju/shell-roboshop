@@ -28,15 +28,14 @@ VALIDATE () { # functions receive inputs through args just like shell script arg
         echo -e " $2..... $G is SUCCESS $N" | tee -a $LOG_FILE
     fi
 }
-
 dnf module disable nodejs -y &>>$LOG_FILE
-VALIDATE $? "Disabling NodeJS"
+VALIDATE $? "Disabling default NodeJS"
 
 dnf module enable nodejs:20 -y &>>$LOG_FILE
-VALIDATE $? "Enabling NodeJS:20"
+VALIDATE $? "Enabling NodeJs:20"
 
 dnf install nodejs -y &>>$LOG_FILE
-VALIDATE $? "Installing NodeJS"
+VALIDATE $? "Installing NodeJs 20"
 
 id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]; then
@@ -49,46 +48,28 @@ fi
 mkdir -p /app &>>$LOG_FILE
 VALIDATE $? "Creating app directory"
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOG_FILE
-VALIDATE $? "Downloading catalogure application"
+curl -L -o /tmp/cart.zip https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip &>>$LOG_FILE
+VALIDATE $? "Downloading cart application"
 
-cd /app
+cd /app &>>$LOG_FILE
 VALIDATE $? "Changing to app directory"
 
 rm -rf /app/*
 VALIDATE $? "Removing existing code"
 
-unzip /tmp/catalogue.zip &>>$LOG_FILE
+unzip /tmp/cart.zip &>>$LOG_FILE
 VALIDATE $? "unzip catalogue"
 
+cd /app 
 npm install &>>$LOG_FILE
 VALIDATE $? "Install dependenceis"
 
-cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
-VALIDATE $? "copy systemctl serice"
+cp mongo.repo $SCRIPT_DIR/etc/systemd/system/cart.service &>>$LOG_FILE
+VALIDATE $? "Adding cart repo" 
 
 systemctl daemon-reload
-systemctl enable catalogue &>>$LOG_FILE
-VALIDATE $? "Enable catalogue"
+systemctl enable cart &>>$LOG_FILE
+VALIDATE $? "Enable cart"
 
-cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
-VALIDATE $? "Copy mongo repo"
-
-dnf install mongodb-mongosh -y &>>$LOG_FILE
-VALIDATE $? "Install MongoDB Client"
-
-INDEX=$(mongosh mongodb.sgrdevsecops.fun --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')")
-if [ $INDEX -le 0 ]; then
-    mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
-    VALIDATE $? "Load catalogue prodcuts"
-else    
-    echo -e "Catalogue products already loaded $Y SKIPPING $N"
-fi
-
-systemctl restart catalogue &>>$LOG_FILE
-VALIDATE $? "Restarted catalogue"
-
-END_TIME=$(date +%s)
-TOTAL_TIME=$(($END_TIME - $START_TIME))
-echo -e "Sctipt executed in: $Y $TOTAL_TIME Seconds"
-
+systemctl start cart &>>$LOG_FILE
+VALIDATE $? "Starting cart"
