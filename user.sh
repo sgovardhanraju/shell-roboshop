@@ -59,8 +59,7 @@ unzip /tmp/user.zip &>>$LOG_FILE
 VALIDATE $? "unzip catalogue"
 
 cd /app 
-npm install 
-&>>$LOG_FILE
+npm install &>>$LOG_FILE
 VALIDATE $? "installing dependenceis"
 
 cp mongouser.repo $SCRIPT_DIR/etc/systemd/system/user.service &>>$LOG_FILE
