@@ -12,6 +12,7 @@ LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_DIR=$PWD
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
+MYSQL_HOST=mysql.sgrdevsecops.fun
 
 mkdir -p $LOGS_FOLDER
 echo "Script starting excuted at $(date)" | tee -a $LOG_FILE
@@ -57,3 +58,20 @@ VALIDATE $? "unzip shipping"
 
 mvn clean package 
 mv target/shipping-1.0.jar shipping.jar 
+
+cp $SCRIPT_DIR/shipping.repo /etc/systemd/system/shipping.service
+systemctl daemon-reload
+systemctl enable shipping  &>>$LOG_FILE
+
+dnf install mysql -y  &>>$LOG_FILE
+
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 -e 'use cities' &>>$LOG_FILE
+if [ $? -ne 0 ]; then
+    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql &>>$LOG_FILE
+    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql  &>>$LOG_FILE
+    mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql &>>$LOG_FILE
+else
+    echo -e "Shipping data is already loaded ... $Y SKIPPING $N"
+fi
+
+systemctl restart shipping
