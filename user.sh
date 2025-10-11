@@ -58,11 +58,10 @@ VALIDATE $? "Removing existing code"
 unzip /tmp/user.zip &>>$LOG_FILE
 VALIDATE $? "unzip catalogue"
 
-cd /app 
 npm install &>>$LOG_FILE
 VALIDATE $? "installing dependenceis"
 
-cp user.repo $SCRIPT_DIR/etc/systemd/system/user.service &>>$LOG_FILE
+cp $SCRIPT_DIR/user.repo /etc/systemd/system/user.service &>>$LOG_FILE
 VALIDATE $? "Adding USER repo" 
 
 systemctl daemon-reload
