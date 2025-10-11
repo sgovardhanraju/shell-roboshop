@@ -60,11 +60,10 @@ VALIDATE $? "Removing existing code"
 unzip /tmp/cart.zip &>>$LOG_FILE
 VALIDATE $? "unzip catalogue"
 
-cd /app 
 npm install &>>$LOG_FILE
 VALIDATE $? "Install dependenceis"
 
-cp mongo.repo $SCRIPT_DIR/etc/systemd/system/cart.service &>>$LOG_FILE
+cp $SCRIPT_DIR/cart.repo /etc/systemd/system/cart.service &>>$LOG_FILE
 VALIDATE $? "Adding cart repo" 
 
 systemctl daemon-reload
