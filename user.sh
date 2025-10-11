@@ -62,8 +62,8 @@ cd /app
 npm install &>>$LOG_FILE
 VALIDATE $? "installing dependenceis"
 
-cp mongouser.repo $SCRIPT_DIR/etc/systemd/system/user.service &>>$LOG_FILE
-VALIDATE $? "Adding cart repo" 
+cp user.repo $SCRIPT_DIR/etc/systemd/system/user.service &>>$LOG_FILE
+VALIDATE $? "Adding USER repo" 
 
 systemctl daemon-reload
 systemctl enable user &>>$LOG_FILE
