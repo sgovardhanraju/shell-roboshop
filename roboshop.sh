@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-AMI_ID=ami-09c813fb71547fc4f
-SG_ID=sg-0caa92da7b80302bc
-ZONE_ID="Z0732355102QE6GB8XDYY"
+AMI_ID=ami-0220d79f3f480ecf5
+SG_ID=sg-0a35f1b312fda2c4d
+ZONE_ID="Z03291922N8IYOATZRG2D"
 DOMAIN_NAME="govardhanarajus.com"
 
 for instance in $@
