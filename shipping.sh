@@ -7,12 +7,12 @@ N="\e[0m"
 
 USERID=$(id -u)
 
-MONGODB_HOST=mongodb.sgrdevsecops.fun
+MONGODB_HOST=mongodb.govardhanarajus.com
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_DIR=$PWD
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
-MYSQL_HOST=mysql.sgrdevsecops.fun
+MYSQL_HOST=mysql.govardhanarajus.com
 
 mkdir -p $LOGS_FOLDER
 echo "Script starting excuted at $(date)" | tee -a $LOG_FILE

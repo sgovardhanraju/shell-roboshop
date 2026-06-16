@@ -9,7 +9,7 @@ N="\e[0m"
 
 USERID=$(id -u)
 
-MONGODB_HOST=mongodb.sgrdevsecops.fun
+MONGODB_HOST=mongodb.govardhanarajus.com
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_DIR=$PWD
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )

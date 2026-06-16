@@ -3,7 +3,7 @@
 AMI_ID=ami-09c813fb71547fc4f
 SG_ID=sg-0caa92da7b80302bc
 ZONE_ID="Z0732355102QE6GB8XDYY"
-DOMAIN_NAME="sgrdevsecops.fun"
+DOMAIN_NAME="govardhanarajus.com"
 
 for instance in $@
 do
@@ -12,7 +12,7 @@ do
     #get Private IP
     if [ $instance != "frontend" ]; then
         IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
-        RECORD_NAME="$instance.$DOMAIN_NAME" #catalogue.sgrdevsecops.fun
+        RECORD_NAME="$instance.$DOMAIN_NAME" #catalogue.govardhanarajus.com
     else
         IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
         RECORD_NAME="$DOMAIN_NAME"    
